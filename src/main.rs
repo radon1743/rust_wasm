@@ -121,12 +121,14 @@ fn write_csv(rcd:Record,n:i32) -> Result<(), Box<dyn Error>>{
         .append(true)  // Open in append mode
         .create(true)  // Create the file if it doesn't exist
         .open(file_path)?;
-    let mut wtr = WriterBuilder::new().has_headers(file_exists).from_writer(file);
+    let mut wtr = WriterBuilder::new().has_headers(!file_exists).from_writer(file);
     if !file_exists {
         wtr.write_record(&["board_states", "next_move"])?;
     }
-    if n == 0 {
-            for i in 0..rcd.board_states.len(){
+    
+    //store in values for drawn games 
+    /*if n == 0 {
+            for i in 0..4{
                 if i%2 == 0{
                     let next_move_str_x = format!("{:?}", rcd.x_next_move[i/2]);
                     let board_state_str = format!("{:?}", rcd.board_states[i]); 
@@ -140,8 +142,8 @@ fn write_csv(rcd:Record,n:i32) -> Result<(), Box<dyn Error>>{
             }
             
             
-        }
-    else if n == -1{
+        } */
+    if n == -1{
            for i in 0..rcd.x_next_move.len(){
                 let next_move_str_x = format!("{:?}", rcd.x_next_move[i]);
                 let board_state_str = format!("{:?}", rcd.board_states[i*2]); 
@@ -180,7 +182,6 @@ fn game_loop(players:i32){
         }
         else{
             (player,n) = rand_move(&mut board,player);
-           // player = player_input(&mut board,player);
         }
         if player == false{
                 rcd.x_next_move.push(n);
@@ -195,7 +196,8 @@ fn game_loop(players:i32){
         let board2 = board.clone();
         rcd.board_states.push(board2);
         game = game_check(&board);
-    }
+    
+      } 
     
     
     
